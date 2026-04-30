@@ -11,6 +11,7 @@ services:
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
+      - PORT=3000
       - DATABASE_URL=postgresql://avatarapp:avatarapp_secret_2024@db:5432/avatarapp
       - AUTH_SECRET=${AUTH_SECRET:-change-me-in-production}
       - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
