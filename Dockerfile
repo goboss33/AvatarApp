@@ -21,6 +21,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/init-db.js ./init-db.js
+COPY --from=deps /app/node_modules ./node_modules
 
 RUN chown -R nextjs:nodejs /app
 
