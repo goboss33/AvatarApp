@@ -21,7 +21,15 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/init-db.js ./init-db.js
-COPY --from=deps /app/node_modules ./node_modules
+
+# RETIRE CETTE LIGNE :
+# COPY --from=deps /app/node_modules ./node_modules
+
+# AJOUTE CES DEUX LIGNES À LA PLACE :
+# On copie le package.json pour que npm sache quoi installer
+COPY package.json ./ 
+# On installe bcryptjs (et postgres si tu utilises "pg" dans init-db.js)
+RUN npm install bcryptjs pg
 
 RUN chown -R nextjs:nodejs /app
 
