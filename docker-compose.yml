@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  avatar-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - avatar-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - AUTH_SECRET=${AUTH_SECRET:-change-me-in-production}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+
+volumes:
+  avatar-data:
+    driver: local
