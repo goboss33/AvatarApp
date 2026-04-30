@@ -4,6 +4,7 @@ import { compare } from "bcryptjs";
 import { generateId } from "./utils";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
