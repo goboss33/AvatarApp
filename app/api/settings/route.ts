@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { generateId } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

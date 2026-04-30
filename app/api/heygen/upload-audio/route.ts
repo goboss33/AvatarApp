@@ -2,6 +2,8 @@ import { auth, getUserHeygenKey } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { uploadAudio } from "@/lib/heygen";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

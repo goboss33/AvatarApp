@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 import { generateVideo } from "@/lib/heygen";
 import { generateId } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { testConnection } from "@/lib/heygen";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const { apiKey } = await request.json();
