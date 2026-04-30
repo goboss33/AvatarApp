@@ -1,29 +1,29 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
 
-export const users = sqliteTable("users", {
-  id: text("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  name: text("name"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey(),
+  email: varchar("email").notNull().unique(),
+  password: varchar("password").notNull(),
+  name: varchar("name"),
+  createdAt: timestamp("created_at").notNull(),
 });
 
-export const settings = sqliteTable("settings", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id),
-  heygenApiKey: text("heygen_api_key"),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+export const settings = pgTable("settings", {
+  id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  heygenApiKey: varchar("heygen_api_key"),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const generations = sqliteTable("generations", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id),
-  mode: text("mode").notNull(),
-  avatarId: text("avatar_id"),
-  audioAssetId: text("audio_asset_id"),
-  videoId: text("video_id"),
-  videoUrl: text("video_url"),
-  status: text("status").notNull().default("pending"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  completedAt: integer("completed_at", { mode: "timestamp" }),
+export const generations = pgTable("generations", {
+  id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  mode: varchar("mode").notNull(),
+  avatarId: varchar("avatar_id"),
+  audioAssetId: varchar("audio_asset_id"),
+  videoId: varchar("video_id"),
+  videoUrl: varchar("video_url"),
+  status: varchar("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").notNull(),
+  completedAt: timestamp("completed_at"),
 });

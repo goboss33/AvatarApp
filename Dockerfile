@@ -20,8 +20,9 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/init-db.js ./init-db.js
 
-RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
@@ -30,4 +31,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "node init-db.js && node server.js"]
