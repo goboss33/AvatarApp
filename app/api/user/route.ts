@@ -43,10 +43,14 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Le nouveau mot de passe doit contenir au moins 6 caractères" }, { status: 400 });
   }
 
-  const updates: Record<string, string | Date> = { updatedAt: new Date() };
+  const updates: Record<string, string | Date> = {};
   if (name !== undefined) updates.name = name;
   if (email !== undefined) updates.email = email;
   if (newPassword) updates.password = await hash(newPassword, 10);
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ success: true });
+  }
 
   await db.update(users).set(updates).where(eq(users.id, session.user.id));
 
