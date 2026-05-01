@@ -12,8 +12,8 @@ import { Loader2, LogIn, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -110,10 +110,6 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
-
-        <p className="text-xs text-center text-gray-400 mt-6">
-          Demo: admin@example.com / admin123
-        </p>
       </div>
     </div>
   );
