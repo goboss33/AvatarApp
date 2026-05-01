@@ -45,11 +45,11 @@ async function init() {
     if (totalUsers === 0) {
       const hashedPassword = await bcrypt.hash("admin123", 10);
       await pool.query(
-        "INSERT INTO users (id, email, password, name, created_at) VALUES ($1, $2, $3, $4, NOW())",
+        "INSERT INTO users (id, email, password, name, created_at) VALUES ($1, $2, $3, $4, NOW()) ON CONFLICT (id) DO NOTHING",
         ["seed-admin-001", "admin@example.com", hashedPassword, "Admin"]
       );
       await pool.query(
-        "INSERT INTO settings (id, user_id, heygen_api_key, updated_at) VALUES ($1, $2, $3, NOW())",
+        "INSERT INTO settings (id, user_id, heygen_api_key, updated_at) VALUES ($1, $2, $3, NOW()) ON CONFLICT (id) DO NOTHING",
         ["seed-settings-001", "seed-admin-001", null]
       );
       console.log("Default user created: admin@example.com / admin123");
