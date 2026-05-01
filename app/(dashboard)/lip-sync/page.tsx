@@ -8,9 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Upload,
   Image as ImageIcon,
   Mic,
   Sparkles,
@@ -68,12 +66,8 @@ function DropZone({
       onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
       onDrop={handleDrop}
       onClick={() => document.getElementById(`input-${label}`)?.click()}
-      className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-        uploaded
-          ? "border-blue-400 bg-blue-50"
-          : isDragging
-          ? "border-blue-500 bg-blue-50"
-          : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+      className={`drop-zone relative rounded-2xl p-14 text-center cursor-pointer ${
+        uploaded ? "uploaded" : isDragging ? "dragging" : ""
       }`}
     >
       <input
@@ -85,28 +79,28 @@ function DropZone({
       />
 
       {uploaded ? (
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-5">
           {preview && accept.includes("image") && (
-            <img src={preview} alt="Preview" className="max-h-24 rounded-lg object-contain shadow-sm" />
+            <img src={preview} alt="Preview" className="max-h-32 rounded-xl object-contain border-[3px] border-black comic-shadow" />
           )}
           {accept.includes("audio") && (
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-              <Mic className="w-6 h-6 text-blue-600" />
+            <div className="w-20 h-20 rounded-2xl bg-primary border-[3px] border-black comic-shadow flex items-center justify-center">
+              <Mic className="w-10 h-10 text-black" strokeWidth={2.5} />
             </div>
           )}
-          <Badge variant="success" className="flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" />
+          <Badge variant="success" className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" strokeWidth={2.5} />
             Fichier prêt
           </Badge>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-            <Icon className="w-6 h-6 text-gray-400" />
+        <div className="flex flex-col items-center gap-5">
+          <div className="w-20 h-20 rounded-2xl bg-secondary border-[3px] border-black flex items-center justify-center">
+            <Icon className="w-10 h-10 text-black" strokeWidth={2.5} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-700">{label}</p>
-            <p className="text-xs text-gray-400 mt-1">Glissez-déposez ou cliquez pour parcourir</p>
+            <p className="text-base font-black text-black uppercase tracking-wide">{label}</p>
+            <p className="text-sm text-gray-600 font-bold mt-2">Glissez-déposez ou cliquez pour parcourir</p>
           </div>
         </div>
       )}
@@ -142,29 +136,36 @@ function VideoPlayer({ videoUrl, onReset }: { videoUrl: string; onReset: () => v
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-green-500" />
-          <CardTitle>Vidéo générée avec succès</CardTitle>
+      <CardHeader className="pb-8">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-accent border-[3px] border-black comic-shadow">
+            <CheckCircle2 className="w-7 h-7 text-black" strokeWidth={2.5} />
+          </div>
+          <div>
+            <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Vidéo générée avec succès</CardTitle>
+            <CardDescription className="text-gray-600 font-bold mt-2 text-base">Votre avatar est prêt à être téléchargé</CardDescription>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-          <video src={videoUrl} controls className="w-full h-full" />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={handleDownload} className="flex-1">
-            <Download className="w-4 h-4" />
-            Télécharger
-          </Button>
-          <Button variant="outline" onClick={handleCopy}>
-            {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            {copied ? "Copié !" : "Copier URL"}
-          </Button>
-          <Button variant="outline" onClick={onReset}>
-            <RotateCcw className="w-4 h-4" />
-            Nouvelle vidéo
-          </Button>
+      <CardContent>
+        <div className="space-y-8">
+          <div className="aspect-video bg-secondary rounded-xl overflow-hidden border-[3px] border-black comic-shadow">
+            <video src={videoUrl} controls className="w-full h-full" />
+          </div>
+          <div className="flex gap-4 flex-wrap">
+            <Button onClick={handleDownload} className="flex-1 h-14 rounded-xl text-base">
+              <Download className="w-5 h-5" strokeWidth={2.5} />
+              Télécharger
+            </Button>
+            <Button variant="outline" onClick={handleCopy} className="h-14 rounded-xl px-8 text-base">
+              {copied ? <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} /> : <Copy className="w-5 h-5" strokeWidth={2.5} />}
+              {copied ? "Copié !" : "Copier URL"}
+            </Button>
+            <Button variant="outline" onClick={onReset} className="h-14 rounded-xl px-8 text-base">
+              <RotateCcw className="w-5 h-5" strokeWidth={2.5} />
+              Nouvelle vidéo
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -249,12 +250,12 @@ export default function LipSyncPage() {
     if (activeTab === "upload" && !imageFile) return;
 
     try {
-      setState({ status: "uploading-audio", videoUrl: null, error: null, progress: "Upload de l&apos;audio..." });
+      setState({ status: "uploading-audio", videoUrl: null, error: null, progress: "Upload de l'audio..." });
       const audioAssetId = await uploadAudio(audioFile);
 
       let talkingPhotoId: string | undefined;
       if (activeTab === "upload" && imageFile) {
-        setState({ status: "uploading-image", videoUrl: null, error: null, progress: "Création de l&apos;avatar..." });
+        setState({ status: "uploading-image", videoUrl: null, error: null, progress: "Création de l'avatar..." });
         talkingPhotoId = await createTalkingPhoto(imageFile);
       }
 
@@ -282,10 +283,10 @@ export default function LipSyncPage() {
 
   if (state.status === "completed" && state.videoUrl) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-12">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Avatar LipSync</h1>
-          <p className="text-gray-500 mt-1">Créez des vidéos lip-sync avec HeyGen</p>
+          <h1 className="text-4xl font-black text-black uppercase tracking-wider">Avatar LipSync</h1>
+          <p className="text-gray-600 font-bold mt-3 text-lg">Créez des vidéos lip-sync avec HeyGen</p>
         </div>
         <VideoPlayer videoUrl={state.videoUrl} onReset={reset} />
       </div>
@@ -293,89 +294,100 @@ export default function LipSyncPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Avatar LipSync</h1>
-        <p className="text-gray-500 mt-1">Créez des vidéos lip-sync avec HeyGen</p>
+        <h1 className="text-4xl font-black text-black uppercase tracking-wider">Avatar LipSync</h1>
+        <p className="text-gray-600 font-bold mt-3 text-lg">Créez des vidéos lip-sync avec HeyGen</p>
       </div>
 
       {state.error && (
-        <Alert variant="destructive">
-          <AlertCircle className="w-4 h-4" />
-          <AlertDescription>{state.error}</AlertDescription>
+        <Alert variant="destructive" className="border-[3px] border-black bg-destructive comic-shadow text-black">
+          <AlertCircle className="w-5 h-5 text-black" strokeWidth={2.5} />
+          <AlertDescription className="text-base font-bold">{state.error}</AlertDescription>
         </Alert>
       )}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "avatar" | "upload")}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="avatar">HeyGen Avatar ID</TabsTrigger>
-          <TabsTrigger value="upload">Upload Image</TabsTrigger>
+        <TabsList className="grid w-full max-w-lg grid-cols-2 h-14 rounded-xl bg-secondary border-[3px] border-black comic-shadow p-2">
+          <TabsTrigger value="avatar" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-[3px] data-[state=active]:border-black data-[state=active]:comic-shadow font-bold text-base transition-all duration-200">
+            <Film className="w-5 h-5 mr-2" strokeWidth={2.5} />
+            HeyGen Avatar ID
+          </TabsTrigger>
+          <TabsTrigger value="upload" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-[3px] data-[state=active]:border-black data-[state=active]:comic-shadow font-bold text-base transition-all duration-200">
+            <ImageIcon className="w-5 h-5 mr-2" strokeWidth={2.5} />
+            Upload Image
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="avatar">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mode Avatar ID</CardTitle>
-              <CardDescription>
+          <Card className="mt-8">
+            <CardHeader className="pb-8">
+              <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Mode Avatar ID</CardTitle>
+              <CardDescription className="text-gray-600 font-bold mt-2 text-base">
                 Utilisez un avatar HeyGen existant avec son ID
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="avatarId">HeyGen Avatar ID</Label>
-                <Input
-                  id="avatarId"
-                  value={avatarId}
-                  onChange={(e) => setAvatarId(e.target.value)}
-                  placeholder="e.g. Avatar_ID_xxx"
-                  disabled={isGenerating}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Fichier audio</Label>
-                <DropZone
-                  accept="audio/*"
-                  onFileSelect={handleAudioSelect}
-                  label="Déposez un fichier audio ici"
-                  icon={Mic}
-                  preview={audioPreview}
-                  uploaded={!!audioFile}
-                />
+            <CardContent>
+              <div className="space-y-10">
+                <div className="space-y-4">
+                  <Label htmlFor="avatarId" className="text-black font-black uppercase tracking-wide text-base">HeyGen Avatar ID</Label>
+                  <Input
+                    id="avatarId"
+                    value={avatarId}
+                    onChange={(e) => setAvatarId(e.target.value)}
+                    placeholder="e.g. Avatar_ID_xxx"
+                    disabled={isGenerating}
+                    className="h-14 rounded-xl text-base"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <Label className="text-black font-black uppercase tracking-wide text-base">Fichier audio</Label>
+                  <DropZone
+                    accept="audio/*"
+                    onFileSelect={handleAudioSelect}
+                    label="Déposez un fichier audio ici"
+                    icon={Mic}
+                    preview={audioPreview}
+                    uploaded={!!audioFile}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="upload">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mode Upload Image</CardTitle>
-              <CardDescription>
+          <Card className="mt-8">
+            <CardHeader className="pb-8">
+              <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Mode Upload Image</CardTitle>
+              <CardDescription className="text-gray-600 font-bold mt-2 text-base">
                 Uploadez une image pour créer un avatar personnalisé
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Image du visage</Label>
-                <DropZone
-                  accept="image/*"
-                  onFileSelect={handleImageSelect}
-                  label="Déposez une image ici"
-                  icon={ImageIcon}
-                  preview={imagePreview}
-                  uploaded={!!imageFile}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Fichier audio</Label>
-                <DropZone
-                  accept="audio/*"
-                  onFileSelect={handleAudioSelect}
-                  label="Déposez un fichier audio ici"
-                  icon={Mic}
-                  preview={audioPreview}
-                  uploaded={!!audioFile}
-                />
+            <CardContent>
+              <div className="space-y-10">
+                <div className="space-y-4">
+                  <Label className="text-black font-black uppercase tracking-wide text-base">Image du visage</Label>
+                  <DropZone
+                    accept="image/*"
+                    onFileSelect={handleImageSelect}
+                    label="Déposez une image ici"
+                    icon={ImageIcon}
+                    preview={imagePreview}
+                    uploaded={!!imageFile}
+                  />
+                </div>
+                <div className="space-y-4">
+                  <Label className="text-black font-black uppercase tracking-wide text-base">Fichier audio</Label>
+                  <DropZone
+                    accept="audio/*"
+                    onFileSelect={handleAudioSelect}
+                    label="Déposez un fichier audio ici"
+                    icon={Mic}
+                    preview={audioPreview}
+                    uploaded={!!audioFile}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -384,12 +396,14 @@ export default function LipSyncPage() {
 
       {state.progress && (
         <Card>
-          <CardContent className="py-4">
-            <div className="flex items-center gap-3">
-              <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+          <CardContent className="py-10">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-primary border-[3px] border-black comic-shadow">
+                <Loader2 className="w-8 h-8 text-black animate-spin" strokeWidth={2.5} />
+              </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{state.progress}</p>
-                <p className="text-xs text-gray-400">Ne fermez pas cette page</p>
+                <p className="text-base font-black text-black uppercase tracking-wide">{state.progress}</p>
+                <p className="text-sm text-gray-600 font-bold mt-2">Ne fermez pas cette page</p>
               </div>
             </div>
           </CardContent>
@@ -404,17 +418,17 @@ export default function LipSyncPage() {
           (activeTab === "avatar" && !avatarId) ||
           (activeTab === "upload" && !imageFile)
         }
-        className="w-full h-12 text-base"
+        className="w-full h-16 text-lg rounded-xl"
       >
         {isGenerating ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Génération en cours...
+            <Loader2 className="w-6 h-6 animate-spin text-black" />
+            <span className="text-black">Génération en cours...</span>
           </>
         ) : (
           <>
-            <Sparkles className="w-5 h-5" />
-            Générer la vidéo
+            <Sparkles className="w-6 h-6 text-black" strokeWidth={2.5} />
+            <span className="text-black">Générer la vidéo</span>
           </>
         )}
       </Button>

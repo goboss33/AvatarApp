@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, LogIn, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Video } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,33 +43,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white mb-4 shadow-lg shadow-blue-600/25">
-            <Sparkles className="w-8 h-8" />
+    <div className="min-h-screen relative flex items-center justify-center p-8 bg-background overflow-hidden">
+      <div className="relative z-10 w-full max-w-md">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-primary border-[3px] border-black comic-shadow mb-8 transform -rotate-3 hover:rotate-0 transition-transform">
+            <Video className="w-12 h-12 text-black" strokeWidth={2.5} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Avatar App</h1>
-          <p className="text-gray-500 mt-2">Plateforme de génération vidéo IA</p>
+          <h1 className="text-5xl font-black text-black uppercase tracking-wider mb-4 transform rotate-1 inline-block">Avatar App</h1>
+          <p className="text-gray-600 font-bold text-lg mt-2">Créez des avatars vidéo IA époustouflants</p>
         </div>
 
-        <Card className="shadow-xl shadow-gray-200/50 border-gray-200">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl">Connexion</CardTitle>
-            <CardDescription>
-              Entrez vos identifiants pour accéder à l&apos;application
+        <Card>
+          <CardHeader className="pb-10">
+            <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Connexion</CardTitle>
+            <CardDescription className="text-gray-600 font-bold text-base mt-2">
+              Accédez à votre espace de création
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="border-[3px] border-black bg-destructive comic-shadow text-black">
+                  <AlertDescription className="font-bold">{error}</AlertDescription>
                 </Alert>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+              <div className="space-y-4">
+                <Label htmlFor="email" className="text-black font-black uppercase tracking-wide text-base">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -78,11 +78,12 @@ export default function LoginPage() {
                   placeholder="admin@example.com"
                   required
                   autoComplete="email"
+                  className="h-14 rounded-xl text-base"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
+              <div className="space-y-4">
+                <Label htmlFor="password" className="text-black font-black uppercase tracking-wide text-base">Mot de passe</Label>
                 <Input
                   id="password"
                   type="password"
@@ -91,25 +92,30 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
+                  className="h-14 rounded-xl text-base"
                 />
               </div>
 
-              <Button type="submit" disabled={loading} className="w-full h-11">
+              <Button type="submit" disabled={loading} className="w-full h-14 rounded-xl text-base mt-6">
                 {loading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Connexion...
+                    <Loader2 className="w-5 h-5 animate-spin text-black" />
+                    Connexion en cours...
                   </>
                 ) : (
                   <>
-                    <LogIn className="w-4 h-4" />
-                    Se connecter
+                    <Sparkles className="w-5 h-5 text-black" strokeWidth={2.5} />
+                    <span className="text-black">Se connecter</span>
                   </>
                 )}
               </Button>
             </form>
           </CardContent>
         </Card>
+
+        <p className="text-center text-gray-500 font-bold text-sm mt-12">
+          Propulsé par l&apos;intelligence artificielle HeyGen
+        </p>
       </div>
     </div>
   );

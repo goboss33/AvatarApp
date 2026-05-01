@@ -3,13 +3,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/ui/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border px-4 py-3 text-sm",
+  "relative w-full rounded-xl border px-6 py-4 text-sm",
   {
     variants: {
       variant: {
-        default: "bg-white border-gray-200 text-gray-900",
-        destructive: "border-red-200 bg-red-50 text-red-800",
-        success: "border-green-200 bg-green-50 text-green-800",
+        default: "bg-white/5 border-white/10 text-zinc-100",
+        destructive: "border-rose-500/30 bg-rose-500/15 text-rose-300",
+        success: "border-emerald-500/30 bg-emerald-500/15 text-emerald-300",
       },
     },
     defaultVariants: {

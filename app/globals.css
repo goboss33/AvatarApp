@@ -1,43 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
-  --color-primary: #2563eb;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0f172a;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #2563eb;
-  --color-sidebar: #f8fafc;
-  --color-sidebar-foreground: #334155;
-  --color-sidebar-accent: #e2e8f0;
-  --color-sidebar-accent-foreground: #0f172a;
-  --color-sidebar-border: #e2e8f0;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-background: #FAFAFA;
+  --color-foreground: #000000;
+  
+  --color-primary: #FEF08A; /* Pastel yellow */
+  --color-primary-foreground: #000000;
+  
+  --color-secondary: #FBCFE8; /* Pastel pink */
+  --color-secondary-foreground: #000000;
+  
+  --color-accent: #BBF7D0; /* Mint green */
+  --color-accent-foreground: #000000;
+  
+  --color-destructive: #FECDD3; /* Light red */
+  --color-destructive-foreground: #000000;
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: #000000;
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #000000;
+
+  --color-border: #000000;
+  --color-input: #FFFFFF;
+  --color-ring: #000000;
+
+  --color-sidebar: #FFFFFF;
+  --color-sidebar-foreground: #000000;
+  --color-sidebar-accent: #FEF08A;
+  --color-sidebar-accent-foreground: #000000;
+  --color-sidebar-border: #000000;
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --border-width-comic: 3px;
+  --shadow-comic: 4px 4px 0px 0px #000000;
+  --shadow-comic-hover: 6px 6px 0px 0px #000000;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 html, body {
   height: 100%;
-  background: #f8fafc;
-  color: #0f172a;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -47,19 +53,110 @@ input, textarea, select, button {
   font-family: inherit;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- COMIC BOOK UTILITIES --- */
+
+.comic-border {
+  border: 3px solid #000000;
+  border-radius: 8px;
+}
+
+.comic-shadow {
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.comic-shadow:hover {
+  box-shadow: 6px 6px 0px 0px #000000;
+  transform: translate(-2px, -2px);
+}
+
+.comic-shadow:active {
+  box-shadow: 0px 0px 0px 0px #000000;
+  transform: translate(4px, 4px);
+}
+
+/* Base Interactive Elements handled by UI components */
+
+.drop-zone {
+  position: relative;
+  border: 3px dashed #000000;
+  background-color: #F9FAFB;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+  padding: 2rem;
+  text-align: center;
+}
+
+.drop-zone:hover {
+  background-color: #FEF08A;
+  transform: scale(1.02);
+}
+
+.drop-zone.dragging {
+  border-style: solid;
+  background-color: #FEF08A;
+  box-shadow: 8px 8px 0px 0px #000000;
+  transform: translate(-4px, -4px);
+}
+
+.drop-zone.uploaded {
+  border-style: solid;
+  background-color: #BBF7D0;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F3F4F6;
+  border-left: 3px solid #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #000000;
+  border: 3px solid #F3F4F6;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #374151;
+}
+
+/* --- OVERRIDES FOR OLD GLASSMORPHISM/GLOW CLASSES --- */
+.aurora-bg, .aurora-orb { display: none !important; }
+
+.glass-sidebar {
+  background-color: #FFFFFF;
+  border-right: 4px solid #000000;
+}
+
+.glow-violet, .glow-rose {
+  box-shadow: none;
+}
+
+.gradient-text {
+  background: none;
+  -webkit-text-fill-color: initial;
+  color: #000000;
+  font-weight: 900;
+  text-shadow: 3px 3px 0px #BBF7D0; /* Fun pastel shadow */
+}
+
+.gradient-border {
+  border: 3px solid #000000;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px 0px #000000;
+}
+.gradient-border::before {
+  display: none;
 }

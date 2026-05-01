@@ -3,32 +3,32 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Sparkles, LayoutDashboard, Video, Settings, LogOut } from "lucide-react";
+import { PlaySquare, LayoutGrid, SlidersHorizontal, LogOut, Zap } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/lip-sync", label: "Avatar LipSync", icon: Video },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+  { href: "/lip-sync", label: "Avatar LipSync", icon: PlaySquare },
+  { href: "/settings", label: "Settings", icon: SlidersHorizontal },
 ];
 
 export default function Sidebar({ user }: { user: { name?: string | null; email?: string | null } }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col w-64 bg-white border-r border-gray-200 flex-shrink-0">
-      <div className="p-5 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 text-white">
-            <Sparkles className="w-5 h-5" />
+    <aside className="bg-white border-r-[4px] border-black flex flex-col w-72 flex-shrink-0 relative z-20 shadow-[4px_0_0_0_rgba(0,0,0,1)]">
+      <div className="p-8 border-b-[4px] border-black bg-primary">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-white border-[3px] border-black rounded-full shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <Zap className="w-6 h-6 text-black fill-black" strokeWidth={2.5} />
           </div>
           <div className="min-w-0">
-            <h1 className="text-base font-bold text-gray-900">Avatar App</h1>
-            <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+            <h1 className="text-xl font-black text-black uppercase tracking-wider">Avatar</h1>
+            <p className="text-sm text-black font-bold truncate opacity-80">{user?.email}</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-6 space-y-4 bg-white">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -36,26 +36,29 @@ export default function Sidebar({ user }: { user: { name?: string | null; email?
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`group flex items-center gap-4 px-5 py-4 rounded-xl text-base font-black uppercase tracking-wide transition-all duration-200 cursor-pointer border-[3px] ${
                 isActive
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-accent text-black border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] -translate-y-1"
+                  : "bg-white text-gray-700 border-transparent hover:border-black hover:bg-secondary hover:text-black hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1"
               }`}
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
+              <Icon className={`w-6 h-6 transition-transform group-hover:scale-110 ${isActive ? 'text-black' : 'text-gray-500 group-hover:text-black'}`} strokeWidth={2.5} />
               <span className="truncate">{item.label}</span>
+              {isActive && (
+                <div className="ml-auto w-3 h-3 rounded-full bg-black" />
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-3 border-t border-gray-100">
+      <div className="p-6 border-t-[4px] border-black bg-white">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all"
+          className="group w-full flex items-center gap-4 px-5 py-4 rounded-xl text-base font-black uppercase tracking-wide text-gray-700 border-[3px] border-transparent hover:bg-destructive hover:text-black hover:border-black hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
         >
-          <LogOut className="w-4 h-4 flex-shrink-0" />
-          Déconnexion
+          <LogOut className="w-6 h-6 text-gray-500 group-hover:text-black transition-transform group-hover:scale-110" strokeWidth={2.5} />
+          <span>Déconnexion</span>
         </button>
       </div>
     </aside>

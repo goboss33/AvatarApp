@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, XCircle, Loader2, Key, Shield, Zap, User } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Key, Shield, Zap, User, Lock } from "lucide-react";
 
 export default function SettingsPage() {
   const [name, setName] = useState("");
@@ -124,210 +124,225 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-1">Configuration de l&apos;application</p>
+        <h1 className="text-4xl font-black text-black uppercase tracking-wider">Settings</h1>
+        <p className="text-gray-600 font-bold mt-3 text-lg">Configuration de l&apos;application</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-blue-600" />
-            <CardTitle>Profil</CardTitle>
+      <Card className="comic-card">
+        <CardHeader className="pb-8">
+          <div className="flex items-center gap-4">
+            <User className="w-8 h-8 text-black" strokeWidth={3} />
+            <div>
+              <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Profil</CardTitle>
+              <CardDescription className="text-gray-600 font-bold mt-1 text-base">
+                Modifiez vos informations de connexion.
+              </CardDescription>
+            </div>
           </div>
-          <CardDescription>
-            Modifiez vos informations de connexion.
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nom</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Votre nom"
-            />
-          </div>
+        <CardContent>
+          <div className="space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-4">
+                <Label htmlFor="name" className="text-black font-black uppercase tracking-wide text-base">Nom</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Votre nom"
+                  className="h-14 rounded-xl text-base"
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Votre email"
-            />
-          </div>
+              <div className="space-y-4">
+                <Label htmlFor="email" className="text-black font-black uppercase tracking-wide text-base">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Votre email"
+                  className="h-14 rounded-xl text-base"
+                />
+              </div>
+            </div>
 
-          <Separator />
+            <Separator className="bg-black h-[3px] w-full rounded-full" />
 
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Entrez votre mot de passe actuel"
-            />
-          </div>
+            <div className="space-y-4">
+              <Label htmlFor="currentPassword" className="text-black font-black uppercase tracking-wide text-base">Mot de passe actuel</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Entrez votre mot de passe actuel"
+                className="h-14 rounded-xl text-base"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nouveau mot de passe (optionnel)</Label>
-            <Input
-              id="newPassword"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Laissez vide pour ne pas changer"
-            />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-4">
+                <Label htmlFor="newPassword" className="text-black font-black uppercase tracking-wide text-base">Nouveau mot de passe</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Optionnel"
+                  className="h-14 rounded-xl text-base"
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirmez le nouveau mot de passe"
-            />
-          </div>
+              <div className="space-y-4">
+                <Label htmlFor="confirmPassword" className="text-black font-black uppercase tracking-wide text-base">Confirmer</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirmez le mot de passe"
+                  className="h-14 rounded-xl text-base"
+                />
+              </div>
+            </div>
 
-          {profileError && (
-            <Alert variant="destructive">
-              <XCircle className="w-4 h-4" />
-              <AlertDescription>{profileError}</AlertDescription>
-            </Alert>
-          )}
-
-          {profileSaved && (
-            <Alert variant="success">
-              <CheckCircle2 className="w-4 h-4" />
-              <AlertDescription>Profil mis à jour avec succès</AlertDescription>
-            </Alert>
-          )}
-
-          <Button onClick={handleProfileSave} disabled={profileLoading || !currentPassword}>
-            {profileLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Sauvegarde...
-              </>
-            ) : (
-              <>
-                <Shield className="w-4 h-4" />
-                Sauvegarder le profil
-              </>
+            {profileError && (
+              <Alert variant="destructive" className="border-[3px] border-black bg-destructive comic-shadow text-black">
+                <XCircle className="w-5 h-5 text-black" strokeWidth={2.5} />
+                <AlertDescription className="text-base font-bold">{profileError}</AlertDescription>
+              </Alert>
             )}
-          </Button>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Key className="w-5 h-5 text-blue-600" />
-            <CardTitle>Clé API HeyGen</CardTitle>
-          </div>
-          <CardDescription>
-            Configurez votre clé API pour utiliser les services HeyGen.{" "}
-            <a
-              href="https://app.heygen.com/settings/api"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Obtenir une clé API
-            </a>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">Clé API</Label>
-            <Input
-              id="apiKey"
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Entrez votre clé API HeyGen"
-            />
-          </div>
+            {profileSaved && (
+              <Alert variant="success" className="border-[3px] border-black bg-accent comic-shadow text-black">
+                <CheckCircle2 className="w-5 h-5 text-black" strokeWidth={2.5} />
+                <AlertDescription className="text-base font-bold">Profil mis à jour avec succès</AlertDescription>
+              </Alert>
+            )}
 
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={handleTest} disabled={testing || !apiKey}>
-              {testing ? (
+            <Button onClick={handleProfileSave} disabled={profileLoading || !currentPassword} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
+              {profileLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Test en cours...
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4" />
-                  Tester la connexion
-                </>
-              )}
-            </Button>
-            <Button onClick={handleSave} disabled={loading || !apiKey}>
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   Sauvegarde...
                 </>
               ) : (
                 <>
-                  <Shield className="w-4 h-4" />
-                  Sauvegarder
+                  <Shield className="w-5 h-5" />
+                  Sauvegarder le profil
                 </>
               )}
             </Button>
           </div>
-
-          {testResult && (
-            <Alert variant={testResult.success ? "success" : "destructive"}>
-              {testResult.success ? (
-                <CheckCircle2 className="w-4 h-4" />
-              ) : (
-                <XCircle className="w-4 h-4" />
-              )}
-              <AlertDescription>{testResult.message}</AlertDescription>
-            </Alert>
-          )}
-
-          {saved && (
-            <Alert variant="success">
-              <CheckCircle2 className="w-4 h-4" />
-              <AlertDescription>Clé API sauvegardée avec succès</AlertDescription>
-            </Alert>
-          )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informations</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Shield className="w-4 h-4 text-blue-600" />
-            </div>
+      <Card className="comic-card">
+        <CardHeader className="pb-8">
+          <div className="flex items-center gap-4">
+            <Key className="w-8 h-8 text-black" strokeWidth={3} />
             <div>
-              <p className="text-sm font-medium text-gray-900">Sécurité</p>
-              <p className="text-sm text-gray-500">Votre clé API est stockée de manière sécurisée dans la base de données locale.</p>
+              <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Clé API HeyGen</CardTitle>
+              <CardDescription className="text-gray-600 font-bold mt-1 text-base">
+                Configurez votre clé API pour utiliser les services HeyGen.{" "}
+                <a
+                  href="https://app.heygen.com/settings/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black font-black underline hover:text-gray-700 transition-colors"
+                >
+                  Obtenir une clé API
+                </a>
+              </CardDescription>
             </div>
           </div>
-          <Separator />
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Zap className="w-4 h-4 text-green-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-10">
+            <div className="space-y-4">
+              <Label htmlFor="apiKey" className="text-black font-black uppercase tracking-wide text-base">Clé API</Label>
+              <Input
+                id="apiKey"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Entrez votre clé API HeyGen"
+                className="h-14 rounded-xl text-base"
+              />
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">HeyGen API</p>
-              <p className="text-sm text-gray-500">Les vidéos sont générées via l&apos;API HeyGen. Le temps de génération varie selon la durée de l&apos;audio.</p>
+
+            <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
+              <Button variant="outline" onClick={handleTest} disabled={testing || !apiKey} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
+                {testing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Test en cours...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5" />
+                    Tester la connexion
+                  </>
+                )}
+              </Button>
+              <Button onClick={handleSave} disabled={loading || !apiKey} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="w-5 h-5" />
+                    Sauvegarder
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {testResult && (
+              <Alert variant={testResult.success ? "success" : "destructive"} className={`border-[3px] border-black comic-shadow text-black ${testResult.success ? "bg-accent" : "bg-destructive"}`}>
+                {testResult.success ? (
+                  <CheckCircle2 className="w-5 h-5 text-black" strokeWidth={2.5} />
+                ) : (
+                  <XCircle className="w-5 h-5 text-black" strokeWidth={2.5} />
+                )}
+                <AlertDescription className="text-base font-bold">{testResult.message}</AlertDescription>
+              </Alert>
+            )}
+
+            {saved && (
+              <Alert variant="success" className="border-[3px] border-black bg-accent comic-shadow text-black">
+                <CheckCircle2 className="w-5 h-5 text-black" strokeWidth={2.5} />
+                <AlertDescription className="text-base font-bold">Clé API sauvegardée avec succès</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="comic-card">
+        <CardHeader className="pb-8">
+          <CardTitle className="text-2xl font-black text-black uppercase tracking-wider">Informations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="flex items-start gap-5 p-6 rounded-xl bg-secondary border-[3px] border-black comic-shadow">
+              <Lock className="w-8 h-8 text-black flex-shrink-0" strokeWidth={2.5} />
+              <div>
+                <p className="text-base font-black text-black uppercase tracking-wide">Sécurité</p>
+                <p className="text-sm text-gray-700 font-bold mt-1">Votre clé API est stockée de manière sécurisée dans la base de données locale.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-5 p-6 rounded-xl bg-accent border-[3px] border-black comic-shadow">
+              <Zap className="w-8 h-8 text-black flex-shrink-0" strokeWidth={2.5} />
+              <div>
+                <p className="text-base font-black text-black uppercase tracking-wide">HeyGen API</p>
+                <p className="text-sm text-gray-700 font-bold mt-1">Les vidéos sont générées via l&apos;API HeyGen. Le temps de génération varie selon la durée de l&apos;audio.</p>
+              </div>
             </div>
           </div>
         </CardContent>
