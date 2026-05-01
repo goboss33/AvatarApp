@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
@@ -20,6 +18,7 @@ services:
         condition: service_healthy
     networks:
       - public_web
+      - internal_net
 
   db:
     image: postgres:16-alpine
@@ -38,7 +37,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - public_web
+      - internal_net
 
 volumes:
   postgres-data:
@@ -47,3 +46,4 @@ volumes:
 networks:
   public_web:
     external: true
+  internal_net:
