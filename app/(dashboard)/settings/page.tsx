@@ -7,9 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, XCircle, Loader2, Key, Shield, Zap } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Key, Shield, Zap, User } from "lucide-react";
 
 export default function SettingsPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
   const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -17,6 +26,14 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.name) setName(data.name);
+        if (data.email) setEmail(data.email);
+      })
+      .catch(() => {});
+
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -24,6 +41,46 @@ export default function SettingsPage() {
       })
       .catch(() => {});
   }, []);
+
+  const handleProfileSave = async () => {
+    setProfileError(null);
+    setProfileSaved(false);
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setProfileError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    if (!currentPassword) {
+      setProfileError("Veuillez entrer votre mot de passe actuel pour confirmer");
+      return;
+    }
+
+    setProfileLoading(true);
+    try {
+      const response = await fetch("/api/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword,
+          name,
+          email,
+          newPassword: newPassword || undefined,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to save");
+      setProfileSaved(true);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (err) {
+      setProfileError(err instanceof Error ? err.message : "Erreur lors de la sauvegarde");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -72,6 +129,103 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
         <p className="text-gray-500 mt-1">Configuration de l&apos;application</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5 text-blue-600" />
+            <CardTitle>Profil</CardTitle>
+          </div>
+          <CardDescription>
+            Modifiez vos informations de connexion.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nom</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Votre nom"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Votre email"
+            />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+            <Input
+              id="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Entrez votre mot de passe actuel"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">Nouveau mot de passe (optionnel)</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Laissez vide pour ne pas changer"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirmez le nouveau mot de passe"
+            />
+          </div>
+
+          {profileError && (
+            <Alert variant="destructive">
+              <XCircle className="w-4 h-4" />
+              <AlertDescription>{profileError}</AlertDescription>
+            </Alert>
+          )}
+
+          {profileSaved && (
+            <Alert variant="success">
+              <CheckCircle2 className="w-4 h-4" />
+              <AlertDescription>Profil mis à jour avec succès</AlertDescription>
+            </Alert>
+          )}
+
+          <Button onClick={handleProfileSave} disabled={profileLoading || !currentPassword}>
+            {profileLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Sauvegarde...
+              </>
+            ) : (
+              <>
+                <Shield className="w-4 h-4" />
+                Sauvegarder le profil
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
