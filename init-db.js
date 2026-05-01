@@ -39,8 +39,10 @@ async function init() {
       )
     `);
 
-    const existing = await pool.query("SELECT id FROM users WHERE email = $1", ["admin@example.com"]);
-    if (existing.rows.length === 0) {
+    const userCount = await pool.query("SELECT COUNT(*) FROM users");
+    const totalUsers = parseInt(userCount.rows[0].count);
+
+    if (totalUsers === 0) {
       const hashedPassword = await bcrypt.hash("admin123", 10);
       await pool.query(
         "INSERT INTO users (id, email, password, name, created_at) VALUES ($1, $2, $3, $4, NOW())",
@@ -52,7 +54,7 @@ async function init() {
       );
       console.log("Default user created: admin@example.com / admin123");
     } else {
-      console.log("Default user already exists.");
+      console.log(`Database already has ${totalUsers} user(s), skipping seed.`);
     }
   } finally {
     await pool.end();
