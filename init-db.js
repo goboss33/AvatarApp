@@ -20,9 +20,19 @@ async function init() {
         id VARCHAR PRIMARY KEY,
         user_id VARCHAR NOT NULL REFERENCES users(id),
         heygen_api_key VARCHAR,
+        api_cost_per_second NUMERIC DEFAULT 0.05,
         updated_at TIMESTAMP NOT NULL
       )
     `);
+
+    // Migrate existing DB if necessary
+    try {
+      await pool.query(`ALTER TABLE settings ADD COLUMN api_cost_per_second NUMERIC DEFAULT 0.05`);
+    } catch (err) {
+      if (err.code !== "42701") { // 42701 is "duplicate_column"
+        console.warn("Could not add api_cost_per_second column:", err.message);
+      }
+    }
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS generations (

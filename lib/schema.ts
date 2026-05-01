@@ -1,4 +1,4 @@
-import { pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, varchar, timestamp, numeric } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
@@ -12,6 +12,7 @@ export const settings = pgTable("settings", {
   id: varchar("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
   heygenApiKey: varchar("heygen_api_key"),
+  apiCostPerSecond: numeric("api_cost_per_second").default("0.05"),
   updatedAt: timestamp("updated_at").notNull(),
 });
 

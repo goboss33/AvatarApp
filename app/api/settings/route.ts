@@ -17,14 +17,17 @@ export async function GET() {
     .where(eq(settingsTable.userId, session.user.id))
     .limit(1);
 
-  return NextResponse.json({ apiKey: result[0]?.heygenApiKey || "" });
+  return NextResponse.json({ 
+    apiKey: result[0]?.heygenApiKey || "",
+    apiCostPerSecond: result[0]?.apiCostPerSecond || "0.05",
+  });
 }
 
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { apiKey } = await request.json();
+  const { apiKey, apiCostPerSecond } = await request.json();
   const now = new Date();
 
   const existing = await db
@@ -36,13 +39,18 @@ export async function POST(request: Request) {
   if (existing.length > 0) {
     await db
       .update(settingsTable)
-      .set({ heygenApiKey: apiKey, updatedAt: now })
+      .set({ 
+        heygenApiKey: apiKey !== undefined ? apiKey : existing[0].heygenApiKey,
+        apiCostPerSecond: apiCostPerSecond !== undefined ? apiCostPerSecond.toString() : existing[0].apiCostPerSecond,
+        updatedAt: now 
+      })
       .where(eq(settingsTable.userId, session.user.id));
   } else {
     await db.insert(settingsTable).values({
       id: generateId(),
       userId: session.user.id,
-      heygenApiKey: apiKey,
+      heygenApiKey: apiKey || "",
+      apiCostPerSecond: apiCostPerSecond !== undefined ? apiCostPerSecond.toString() : "0.05",
       updatedAt: now,
     });
   }

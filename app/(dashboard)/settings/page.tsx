@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [profileError, setProfileError] = useState<string | null>(null);
 
   const [apiKey, setApiKey] = useState("");
+  const [apiCostPerSecond, setApiCostPerSecond] = useState("0.05");
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -38,6 +39,7 @@ export default function SettingsPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.apiKey) setApiKey(data.apiKey);
+        if (data.apiCostPerSecond) setApiCostPerSecond(data.apiCostPerSecond);
       })
       .catch(() => {});
   }, []);
@@ -89,7 +91,7 @@ export default function SettingsPage() {
       const response = await fetch("/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey }),
+        body: JSON.stringify({ apiKey, apiCostPerSecond }),
       });
       if (!response.ok) throw new Error("Failed to save");
       setSaved(true);
@@ -273,6 +275,21 @@ export default function SettingsPage() {
                 className="h-14 rounded-xl text-base"
               />
             </div>
+            
+            <div className="space-y-4">
+              <Label htmlFor="apiCost" className="text-black font-black uppercase tracking-wide text-base">Coût API par seconde ($)</Label>
+              <Input
+                id="apiCost"
+                type="number"
+                step="0.001"
+                min="0"
+                value={apiCostPerSecond}
+                onChange={(e) => setApiCostPerSecond(e.target.value)}
+                placeholder="Ex: 0.05"
+                className="h-14 rounded-xl text-base"
+              />
+              <p className="text-sm text-gray-600 font-bold">Prix actuel de HeyGen Avatar IV : $0.05/sec</p>
+            </div>
 
             <div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
               <Button variant="outline" onClick={handleTest} disabled={testing || !apiKey} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
@@ -288,7 +305,7 @@ export default function SettingsPage() {
                   </>
                 )}
               </Button>
-              <Button onClick={handleSave} disabled={loading || !apiKey} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
+              <Button onClick={handleSave} disabled={loading || !apiKey || !apiCostPerSecond} className="h-14 rounded-xl px-10 text-base w-full sm:w-auto">
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
