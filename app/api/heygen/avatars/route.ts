@@ -1,6 +1,6 @@
 import { auth, getUserHeygenKey } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { listAvatars } from "@/lib/heygen";
+import { listAvatarLooks } from "@/lib/heygen";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export async function GET() {
   if (!apiKey) return NextResponse.json({ error: "HeyGen API key not configured" }, { status: 400 });
 
   try {
-    const result = await listAvatars(apiKey);
+    const result = await listAvatarLooks(apiKey, "private");
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(

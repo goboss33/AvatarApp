@@ -21,7 +21,9 @@ import {
   CheckCircle2,
   DollarSign,
   Clock,
+  Info,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,8 +31,15 @@ interface AudioItem {
   id: string;
   file: File;
   name: string;
-  duration: number; // seconds
+  duration: number;
   objectUrl: string;
+}
+
+interface AvatarLook {
+  id: string;
+  name: string;
+  preview_image_url: string | null;
+  supported_api_engines: string[];
 }
 
 interface BatchState {
@@ -327,7 +336,11 @@ function ImageDropZone({
 export default function LipSyncPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"avatar" | "upload">("avatar");
-  const [avatarId, setAvatarId] = useState("");
+  const [heygenModel, setHeygenModel] = useState<"avatar_iv" | "avatar_v">("avatar_iv");
+  const [selectedAvatarId, setSelectedAvatarId] = useState("");
+  const [avatars, setAvatars] = useState<AvatarLook[]>([]);
+  const [loadingAvatars, setLoadingAvatars] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const [audioItems, setAudioItems] = useState<AudioItem[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -349,6 +362,23 @@ export default function LipSyncPage() {
         if (d.apiCostPerSecond) setCostPerSecond(parseFloat(d.apiCostPerSecond));
       })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    setLoadingAvatars(true);
+    setAvatarError(null);
+    fetch("/api/heygen/avatars")
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load avatars");
+        return r.json();
+      })
+      .then((d) => {
+        setAvatars(d.avatars || []);
+      })
+      .catch((err) => {
+        setAvatarError(err instanceof Error ? err.message : "Erreur de chargement");
+      })
+      .finally(() => setLoadingAvatars(false));
   }, []);
 
   // Add audio files to the list
@@ -403,6 +433,7 @@ export default function LipSyncPage() {
     avatarId?: string;
     talkingPhotoId?: string;
     audioAssetId: string;
+    engine?: "avatar_iv" | "avatar_v";
   }): Promise<string> => {
     const res = await fetch("/api/heygen/generate-video", {
       method: "POST",
@@ -444,9 +475,10 @@ export default function LipSyncPage() {
       try {
         const audioAssetId = await uploadAudio(item.file);
         await generateVideo({
-          avatarId: activeTab === "avatar" ? avatarId : undefined,
+          avatarId: activeTab === "avatar" ? selectedAvatarId : undefined,
           talkingPhotoId,
           audioAssetId,
+          engine: activeTab === "avatar" ? heygenModel : undefined,
         });
       } catch (err) {
         errors.push(`${item.name}: ${err instanceof Error ? err.message : "Erreur inconnue"}`);
@@ -464,7 +496,7 @@ export default function LipSyncPage() {
   const isRunning = batch.status === "running";
   const canGenerate =
     audioItems.length > 0 &&
-    (activeTab === "avatar" ? !!avatarId : !!imageFile);
+    (activeTab === "avatar" ? !!selectedAvatarId : !!imageFile);
 
   const totalDuration = audioItems.reduce((acc, a) => acc + a.duration, 0);
 
@@ -560,19 +592,123 @@ export default function LipSyncPage() {
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle className="text-xl font-black uppercase tracking-wider">Mode Avatar ID</CardTitle>
-                <CardDescription className="font-bold">Utilisez un avatar HeyGen existant avec son ID.</CardDescription>
+                <CardDescription className="font-bold">Sélectionnez un avatar HeyGen et le modèle de génération.</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Label htmlFor="avatarId" className="text-black font-black uppercase tracking-wide text-sm">HeyGen Avatar ID</Label>
-                  <Input
-                    id="avatarId"
-                    value={avatarId}
-                    onChange={(e) => setAvatarId(e.target.value)}
-                    placeholder="e.g. Avatar_ID_xxx"
-                    disabled={isRunning}
-                    className="h-14 rounded-xl text-base"
-                  />
+              <CardContent className="space-y-6">
+                {/* Model Toggle */}
+                <div className="space-y-3">
+                  <Label className="text-black font-black uppercase tracking-wide text-sm">Modèle HeyGen</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setHeygenModel("avatar_iv")}
+                      className={`h-14 rounded-xl border-[3px] border-black font-bold text-base transition-all duration-200 comic-shadow ${
+                        heygenModel === "avatar_iv"
+                          ? "bg-primary text-black"
+                          : "bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      Avatar IV
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeygenModel("avatar_v")}
+                      className={`h-14 rounded-xl border-[3px] border-black font-bold text-base transition-all duration-200 comic-shadow ${
+                        heygenModel === "avatar_v"
+                          ? "bg-primary text-black"
+                          : "bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      Avatar V
+                    </button>
+                  </div>
+                </div>
+
+                {/* Avatar Picker */}
+                <div className="space-y-3">
+                  <Label className="text-black font-black uppercase tracking-wide text-sm">Choisir un avatar</Label>
+                  
+                  {avatarError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="w-4 h-4" />
+                      <AlertDescription className="font-bold text-sm">{avatarError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {loadingAvatars ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="space-y-2">
+                          <Skeleton className="h-32 rounded-xl border-[3px] border-black" />
+                          <Skeleton className="h-4 w-3/4 mx-auto" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : avatars.length === 0 ? (
+                    <div className="p-8 text-center rounded-xl border-[3px] border-dashed border-black bg-gray-50">
+                      <p className="font-bold text-gray-600">Aucun avatar trouvé.</p>
+                      <p className="text-sm text-gray-500 mt-1">Créez un avatar sur HeyGen d&apos;abord.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {avatars.map((avatar) => {
+                        const supportsV = avatar.supported_api_engines.includes("avatar_v");
+                        const isDisabled = heygenModel === "avatar_v" && !supportsV;
+                        const isSelected = selectedAvatarId === avatar.id;
+
+                        return (
+                          <div key={avatar.id} className="relative group">
+                            <button
+                              type="button"
+                              onClick={() => !isDisabled && setSelectedAvatarId(avatar.id)}
+                              disabled={isDisabled}
+                              className={`w-full rounded-xl border-[3px] border-black overflow-hidden transition-all duration-200 comic-shadow ${
+                                isSelected
+                                  ? "border-primary bg-primary"
+                                  : isDisabled
+                                  ? "opacity-40 cursor-not-allowed grayscale"
+                                  : "bg-white hover:-translate-y-0.5"
+                              }`}
+                            >
+                              <div className="aspect-square bg-gray-100 relative">
+                                {avatar.preview_image_url ? (
+                                  <img
+                                    src={avatar.preview_image_url}
+                                    alt={avatar.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                                  </div>
+                                )}
+                                {isSelected && (
+                                  <div className="absolute inset-0 bg-primary/30 flex items-center justify-center">
+                                    <CheckCircle2 className="w-8 h-8 text-black" strokeWidth={3} />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="p-2 text-center">
+                                <p className="text-xs font-bold text-black truncate">{avatar.name}</p>
+                              </div>
+                            </button>
+                            {isDisabled && (
+                              <div className="absolute -top-2 -right-2 z-10">
+                                <div className="group/tooltip relative">
+                                  <div className="w-6 h-6 rounded-full bg-destructive border-[2px] border-black flex items-center justify-center">
+                                    <Info className="w-3 h-3 text-black" />
+                                  </div>
+                                  <div className="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:block w-40 p-2 rounded-lg border-[2px] border-black bg-white comic-shadow z-20">
+                                    <p className="text-xs font-bold text-black text-center">Incompatible AVATAR V</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

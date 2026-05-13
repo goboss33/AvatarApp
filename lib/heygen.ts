@@ -61,33 +61,84 @@ export async function createTalkingPhoto(
   return { talking_photo_id: tpId };
 }
 
-export async function generateVideo(
+export async function listAvatarLooks(
+  apiKey: string,
+  ownership: "public" | "private" = "private"
+): Promise<{ avatars: Array<{ id: string; name: string; preview_image_url: string | null; supported_api_engines: string[] }> }> {
+  const response = await fetch(`${HEYGEN_API_BASE}/v3/avatars/looks?ownership=${ownership}&limit=50`, {
+    method: "GET",
+    headers: { "x-api-key": apiKey },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`HeyGen list avatar looks failed: ${response.status} - ${error}`);
+  }
+
+  const data = await response.json();
+  const looks = data.data || [];
+  return {
+    avatars: looks.map((look: any) => ({
+      id: look.id,
+      name: look.name,
+      preview_image_url: look.preview_image_url || null,
+      supported_api_engines: look.supported_api_engines || [],
+    })),
+  };
+}
+
+export async function generateVideoV3(
   apiKey: string,
   options: {
-    avatarId?: string;
-    talkingPhotoId?: string;
+    avatarId: string;
+    audioAssetId: string;
+    engine?: "avatar_iv" | "avatar_v";
+  }
+): Promise<{ video_id: string }> {
+  const engine = options.engine || "avatar_iv";
+
+  const response = await fetch(`${HEYGEN_API_BASE}/v3/videos`, {
+    method: "POST",
+    headers: getHeaders(apiKey),
+    body: JSON.stringify({
+      type: "avatar",
+      avatar_id: options.avatarId,
+      audio_asset_id: options.audioAssetId,
+      engine: { type: engine },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`HeyGen generate video v3 failed: ${response.status} - ${error}`);
+  }
+
+  const data = await response.json();
+  const videoId = data.data?.video_id || data.video_id;
+  if (!videoId) {
+    throw new Error(`No video_id in response: ${JSON.stringify(data)}`);
+  }
+  return { video_id: videoId };
+}
+
+export async function generateVideoWithTalkingPhoto(
+  apiKey: string,
+  options: {
+    talkingPhotoId: string;
     audioAssetId: string;
   }
 ): Promise<{ video_id: string }> {
-  const character = options.talkingPhotoId
-    ? {
-        type: "talking_photo",
-        talking_photo_id: options.talkingPhotoId,
-        use_avatar_iv_model: true,
-      }
-    : {
-        type: "avatar",
-        avatar_id: options.avatarId,
-        use_avatar_iv_model: true,
-      };
-
   const response = await fetch(`${HEYGEN_API_BASE}/v2/video/generate`, {
     method: "POST",
     headers: getHeaders(apiKey),
     body: JSON.stringify({
       video_inputs: [
         {
-          character,
+          character: {
+            type: "talking_photo",
+            talking_photo_id: options.talkingPhotoId,
+            use_avatar_iv_model: true,
+          },
           voice: {
             type: "audio",
             audio_asset_id: options.audioAssetId,
@@ -99,7 +150,7 @@ export async function generateVideo(
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`HeyGen generate video failed: ${response.status} - ${error}`);
+    throw new Error(`HeyGen generate video (talking photo) failed: ${response.status} - ${error}`);
   }
 
   const data = await response.json();
@@ -134,24 +185,6 @@ export async function getVideoStatus(
     video_url: result.video_url,
     error: result.error,
   };
-}
-
-export async function listAvatars(
-  apiKey: string
-): Promise<{ avatars: Array<{ avatar_id: string; name: string; gender: string }> }> {
-  const response = await fetch(`${HEYGEN_API_BASE}/v1/avatar.list`, {
-    method: "GET",
-    headers: { "x-api-key": apiKey },
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`HeyGen list avatars failed: ${response.status} - ${error}`);
-  }
-
-  const data = await response.json();
-  const avatars = data.data?.avatars || data.avatars || [];
-  return { avatars };
 }
 
 export async function testConnection(apiKey: string): Promise<{ success: boolean; error?: string; warning?: string }> {

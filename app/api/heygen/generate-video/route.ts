@@ -2,7 +2,7 @@ import { auth, getUserHeygenKey } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { generations } from "@/lib/schema";
 import { NextResponse } from "next/server";
-import { generateVideo } from "@/lib/heygen";
+import { generateVideoV3, generateVideoWithTalkingPhoto } from "@/lib/heygen";
 import { generateId } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -16,17 +16,28 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { avatarId, talkingPhotoId, audioAssetId } = body;
+    const { avatarId, talkingPhotoId, audioAssetId, engine } = body;
 
     if (!audioAssetId) {
       return NextResponse.json({ error: "audioAssetId is required" }, { status: 400 });
     }
 
-    const result = await generateVideo(apiKey, {
-      avatarId,
-      talkingPhotoId,
-      audioAssetId,
-    });
+    let result: { video_id: string };
+
+    if (talkingPhotoId) {
+      result = await generateVideoWithTalkingPhoto(apiKey, {
+        talkingPhotoId,
+        audioAssetId,
+      });
+    } else if (avatarId) {
+      result = await generateVideoV3(apiKey, {
+        avatarId,
+        audioAssetId,
+        engine: engine || "avatar_iv",
+      });
+    } else {
+      return NextResponse.json({ error: "avatarId or talkingPhotoId is required" }, { status: 400 });
+    }
 
     await db.insert(generations).values({
       id: generateId(),
